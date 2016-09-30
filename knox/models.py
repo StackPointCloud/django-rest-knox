@@ -36,7 +36,7 @@ class AuthTokenManager(models.Manager):
 
 class AuthToken(models.Model):
     """
-    Model that houses details of an API token
+    Model that houses details of an auth token
     """
     objects = AuthTokenManager()
 
@@ -49,7 +49,7 @@ class AuthToken(models.Model):
     expires = models. DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return "%s : %s" % (self.digest, self.user)
+        return "%s <%s>" % (self.user, self.token_id)
 
     @property
     def token_id(self):
