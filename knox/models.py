@@ -13,16 +13,22 @@ class AuthTokenManager(models.Manager):
     """
     Manager for AuthToken model
     """
-    def create(self, user, expires=None):
+    def create(self, **kwargs):
         token = crypto.create_token_string()
         salt = crypto.create_salt_string()
         digest = crypto.hash_token(token, salt)
 
+        expires = kwargs.get('expires')
         if expires is not None:
              expires = timezone.now() + expires
 
-        auth_token = super(AuthTokenManager, self).create(
-            digest=digest, salt=salt, user=user, expires=expires)
+        kwargs.update({
+            'digest': digest,
+            'salt': salt,
+            'expires': expires
+        })
+
+        auth_token = super(AuthTokenManager, self).create(**kwargs)
         auth_token.token = token
 
         return auth_token
