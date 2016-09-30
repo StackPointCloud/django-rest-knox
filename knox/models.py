@@ -5,10 +5,15 @@ from django.utils import timezone
 from knox import crypto
 from knox.settings import CONSTANTS, knox_settings
 
+
 User = settings.AUTH_USER_MODEL
 
+
 class AuthTokenManager(models.Manager):
-    def create(self, user, expires=knox_settings.TOKEN_TTL):
+    """
+    Manager for AuthToken model
+    """
+    def create(self, user, expires=None):
         token = crypto.create_token_string()
         salt = crypto.create_salt_string()
         digest = crypto.hash_token(token, salt)
@@ -16,20 +21,30 @@ class AuthTokenManager(models.Manager):
         if expires is not None:
              expires = timezone.now() + expires
 
-        super(AuthTokenManager, self).create(digest=digest, salt=salt, user=user, expires=expires)
-        return token # Note only the token - not the AuthToken object - is returned
+        auth_token = super(AuthTokenManager, self).create(
+            digest=digest, salt=salt, user=user, expires=expires)
+        auth_token.token = token
+
+        return auth_token
 
 
 class AuthToken(models.Model):
-
+    """
+    Model that houses details of an API token
+    """
     objects = AuthTokenManager()
 
     name = models.CharField(max_length=200, default='')
     digest = models.CharField(max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
     salt = models.CharField(max_length=CONSTANTS.SALT_LENGTH, unique=True)
-    user = models.ForeignKey(User, null=False, blank=False, related_name="auth_token_set")
+    user = models.ForeignKey(User, null=False, blank=False, related_name="auth_tokens")
+    is_system = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     expires = models. DateTimeField(null=True, blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s : %s" % (self.digest, self.user)
+
+    @property
+    def token_id(self):
+        return self.digest[:10]
