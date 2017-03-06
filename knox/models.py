@@ -46,7 +46,7 @@ class AuthToken(models.Model):
     user = models.ForeignKey(User, null=False, blank=False, related_name="auth_tokens")
     is_system = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
-    expires = models. DateTimeField(null=True, blank=True)
+    expires = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return "%s <%s>" % (self.user, self.token_id)
