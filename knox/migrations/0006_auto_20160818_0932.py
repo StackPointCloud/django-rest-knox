@@ -5,11 +5,6 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 
 
-def cleanup_tokens(apps, schema_editor):
-    AuthToken = apps.get_model('knox', 'AuthToken')
-    AuthToken.objects.filter(token_key__isnull=True).delete()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -17,11 +12,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(cleanup_tokens),
-        migrations.AlterField(
-            model_name='authtoken',
-            name='token_key',
-            field=models.CharField(db_index=True, default='', max_length=8),
-            preserve_default=False,
-        ),
     ]
