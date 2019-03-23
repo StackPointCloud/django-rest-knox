@@ -6,11 +6,6 @@ with little extra effort; and to ensure that connections remain secure.
 Knox authentication is token based, similar to the `TokenAuthentication` built
 in to DRF. However, it overcomes some problems present in the default implementation:
 
--   DRF Tokens are generated with `os.urandom`, which is not cryptographically
-    secure.
-
-    Knox uses OpenSSL to provide tokens.
-
 -   DRF tokens are limited to one per user. This does not facilitate securely
     signing in from multiple devices, as the token is shared. It also requires
     *all* devices to be logged out if a server-side logout is required (i.e. the
@@ -18,7 +13,8 @@ in to DRF. However, it overcomes some problems present in the default implementa
 
     Knox provides one token per call to the login view - allowing
     each client to have its own token which is deleted on the server side when the client
-    logs out.
+    logs out. Knox also provides an optional setting to limit the amount of tokens generated
+    per user.
 
     Knox also provides an option for a logged in client to remove *all* tokens
     that the server has - forcing all clients to re-authenticate.

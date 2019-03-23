@@ -16,4 +16,16 @@ class Migration(migrations.Migration):
             name='expires',
             field=models.DateTimeField(null=True, blank=True),
         ),
+        migrations.AddField(
+            model_name='authtoken',
+            name='name',
+            field=models.CharField(default=b'', max_length=200),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='authtoken',
+            name='is_system',
+            field=models.BooleanField(default=False),
+            preserve_default=True,
+        ),
     ]

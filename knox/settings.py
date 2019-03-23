@@ -9,7 +9,10 @@ DEFAULTS = {
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
-    'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+    'USER_SERIALIZER': None,
+    'TOKEN_LIMIT_PER_USER': None,
+    'AUTO_REFRESH': False,
+    'MIN_REFRESH_INTERVAL': 60,
     'AUTH_HEADER_PREFIX': 'Token',
 }
 
@@ -20,25 +23,30 @@ IMPORT_STRINGS = {
 
 knox_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
 
+
 def reload_api_settings(*args, **kwargs):
     global knox_settings
     setting, value = kwargs['setting'], kwargs['value']
     if setting == 'REST_KNOX':
         knox_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
 
+
 setting_changed.connect(reload_api_settings)
+
 
 class CONSTANTS:
     '''
     Constants cannot be changed at runtime
     '''
+    TOKEN_KEY_LENGTH = 8
     DIGEST_LENGTH = 128
     SALT_LENGTH = 16
 
-    def __setattr__ (self, *_, **__):
-        raise RuntimeException('''
+    def __setattr__(self, *args, **kwargs):
+        raise Exception('''
             Constant values must NEVER be changed at runtime, as they are
             integral to the structure of database tables
-            '''
-        )
+            ''')
+
+
 CONSTANTS = CONSTANTS()
