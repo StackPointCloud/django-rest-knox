@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='authtoken',
             name='token_key',
-            field=models.CharField(blank=True, db_index=True, max_length=8, null=True),
+            field=models.CharField(db_index=True, default='', max_length=8),
+            preserve_default=False,
         ),
     ]
